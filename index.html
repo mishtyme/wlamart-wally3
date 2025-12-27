@@ -1,546 +1,801 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Merchant Brain - Proposal</title>
+    <title>The Merchant Brain - Strategic Proposal</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
                     },
                     colors: {
                         walmart: {
                             blue: '#0071DC',
                             yellow: '#FFC220',
                             dark: '#041E42',
-                            light: '#E6F1FC'
+                            light: '#E6F1FC',
+                            gray: '#4a4a4a'
                         }
+                    },
+                    backgroundImage: {
+                        'grid-pattern': "linear-gradient(to right, #f0f0f0 1px, transparent 1px), linear-gradient(to bottom, #f0f0f0 1px, transparent 1px)",
                     }
                 }
             }
         }
     </script>
     <style>
-        .flow-line {
-            position: absolute;
-            top: 50%;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: #e2e8f0;
-            z-index: 0;
-            transform: translateY(-50%);
+        /* Custom Utilities */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(229, 231, 235, 0.5);
         }
-        .flow-active-line {
+        .section-heading {
+            position: relative;
+            padding-left: 1.5rem;
+        }
+        .section-heading::before {
+            content: '';
             position: absolute;
-            top: 50%;
             left: 0;
-            height: 4px;
+            top: 0.25rem;
+            bottom: 0.25rem;
+            width: 4px;
             background: #0071DC;
-            z-index: 1;
-            transform: translateY(-50%);
-            width: 0%;
-            transition: width 0.5s ease;
+            border-radius: 2px;
         }
-        @media (max-width: 768px) {
-            .flow-line {
-                top: 0;
-                left: 50%;
-                width: 4px;
-                height: 100%;
-                transform: translateX(-50%);
-            }
-            .flow-active-line {
-                top: 0;
-                left: 50%;
-                width: 4px;
-                height: 0%;
-                transform: translateX(-50%);
-                transition: height 0.5s ease;
+        
+        /* Animation Classes */
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease-out forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
         }
-        .fade-in { animation: fadeIn 0.5s ease-in; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Flow Animation */
+        .flow-node {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .flow-node.active {
+            border-color: #0071DC;
+            box-shadow: 0 0 0 4px rgba(0, 113, 220, 0.1);
+            transform: scale(1.02);
+        }
+        .flow-line-fill {
+            transition: width 1s ease, height 1s ease;
+        }
+        
+        /* Smooth Scroll Padding */
+        section {
+            scroll-margin-top: 6rem;
+        }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans antialiased scroll-smooth">
+<body class="bg-slate-50 text-slate-800 font-sans antialiased selection:bg-walmart-blue selection:text-white">
 
-    <!-- Header / Hero -->
-    <header class="bg-walmart-dark text-white border-b-4 border-walmart-yellow">
-        <div class="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
-                <div>
-                    <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-2">The Merchant Brain</h1>
-                    <p class="text-xl text-blue-200 font-light">End-to-End, Trust-Centered AI Orchestration at Walmart</p>
+    <!-- Background Grid -->
+    <div class="fixed inset-0 bg-grid-pattern bg-[size:40px_40px] z-0 opacity-40 pointer-events-none"></div>
+
+    <!-- Layout Container -->
+    <div class="relative z-10 flex min-h-screen">
+
+        <!-- Sidebar Navigation (Desktop) -->
+        <aside class="hidden lg:block w-72 fixed h-screen top-0 left-0 border-r border-gray-200 bg-white/80 backdrop-blur overflow-y-auto z-50">
+            <div class="p-6">
+                <div class="flex items-center gap-2 font-bold text-walmart-dark text-xl mb-8">
+                    <span class="text-walmart-blue">✦</span> Merchant Brain
                 </div>
-                <div class="mt-6 md:mt-0 text-left md:text-right text-sm text-gray-300">
-                    <p><span class="font-semibold text-white">Author:</span> Sharmistha Dutta</p>
-                    <p><span class="font-semibold text-white">Target Role:</span> Principal Product Manager</p>
-                    <p><span class="font-semibold text-white">Audience:</span> Merch Core, Product, Engineering, DS</p>
-                </div>
+                <nav class="space-y-1 text-sm font-medium text-gray-600">
+                    <a href="#intro" class="block px-3 py-2 rounded-md hover:bg-blue-50 hover:text-walmart-blue transition-colors">Introduction</a>
+                    <a href="#executive-summary" class="block px-3 py-2 rounded-md hover:bg-blue-50 hover:text-walmart-blue transition-colors">1. Executive Summary</a>
+                    <a href="#core-problem" class="block px-3 py-2 rounded-md hover:bg-blue-50 hover:text-walmart-blue transition-colors">2. The Core Problem</a>
+                    <a href="#product-vision" class="block px-3 py-2 rounded-md hover:bg-blue-50 hover:text-walmart-blue transition-colors">3. Product Vision</a>
+                    <a href="#architecture" class="block px-3 py-2 rounded-md hover:bg-blue-50 hover:text-walmart-blue transition-colors">4. Architecture (Agents)</a>
+                    <a href="#execution" class="block px-3 py-2 rounded-md hover:bg-blue-50 hover:text-walmart-blue transition-colors">5-10. Execution Strategy</a>
+                    <a href="#challenges" class="block px-3 py-2 rounded-md hover:bg-blue-50 hover:text-walmart-blue transition-colors">11. Challenges & Tradeoffs</a>
+                    <a href="#failure-governance" class="block px-3 py-2 rounded-md hover:bg-blue-50 hover:text-walmart-blue transition-colors">12. Failure & Governance</a>
+                    <a href="#pedigree" class="block px-3 py-2 rounded-md hover:bg-blue-50 hover:text-walmart-blue transition-colors">14. The Pedigree</a>
+                </nav>
             </div>
-        </div>
-    </header>
-
-    <!-- Navigation (Sticky) -->
-    <nav class="sticky top-0 z-50 bg-white/95 backdrop-blur shadow-sm border-b border-gray-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-14 overflow-x-auto">
-                <div class="flex space-x-8 whitespace-nowrap">
-                    <a href="#summary" class="text-sm font-medium text-gray-700 hover:text-walmart-blue transition-colors">Executive Summary</a>
-                    <a href="#agents" class="text-sm font-medium text-gray-700 hover:text-walmart-blue transition-colors">6-Agent Model</a>
-                    <a href="#flow" class="text-sm font-medium text-gray-700 hover:text-walmart-blue transition-colors">Decision Flow</a>
-                    <a href="#execution" class="text-sm font-medium text-gray-700 hover:text-walmart-blue transition-colors">Execution</a>
-                    <a href="#pedigree" class="text-sm font-medium text-gray-700 hover:text-walmart-blue transition-colors">Why Me?</a>
-                </div>
+            <div class="p-6 border-t border-gray-100 bg-gray-50/50">
+                <p class="text-xs text-gray-500 font-mono">CONFIDENTIAL<br>INTERNAL PROPOSAL</p>
             </div>
-        </div>
-    </nav>
+        </aside>
 
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-20">
+        <!-- Main Content -->
+        <main class="flex-1 lg:ml-72 w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-12 py-12 space-y-20">
 
-        <!-- Executive Guide -->
-        <section class="bg-white rounded-xl shadow-sm p-8 border border-gray-100">
-            <h2 class="text-xs font-bold uppercase tracking-wide text-gray-500 mb-4">How to Read This Document</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div>
-                    <p class="mb-2"><span class="font-semibold text-walmart-blue">If you have 5 minutes:</span> Read Executive Summary & Skim 30/60/90 Days.</p>
-                    <p class="mb-2"><span class="font-semibold text-walmart-blue">If you have 15 minutes:</span> Read Problem, Vision, Architecture, Execution & Rollout.</p>
-                </div>
-                <div>
-                    <p class="mb-2"><span class="font-semibold text-walmart-blue">To assess execution readiness:</span> Focus on Phases 1–3, Metrics, Failure & Rollback.</p>
-                    <p class="mb-2 text-sm italic text-gray-500 mt-4">This proposal demonstrates how I think, execute, and manage risk when building AI-powered decision systems at Walmart scale.</p>
-                </div>
+            <!-- Mobile Header -->
+            <div class="lg:hidden mb-8 border-b pb-4">
+                <h1 class="text-2xl font-bold text-walmart-dark">The Merchant Brain</h1>
+                <p class="text-sm text-gray-500">End-to-End Decision Orchestration</p>
             </div>
-        </section>
 
-        <!-- Executive Summary -->
-        <section id="summary">
-            <div class="border-l-4 border-walmart-blue pl-6 py-2 mb-8">
-                <h2 class="text-3xl font-bold text-gray-900">Executive Summary</h2>
-                <p class="mt-2 text-lg text-gray-600">Orchestration over Optimization</p>
-            </div>
-            
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                <div class="space-y-6">
-                    <div class="bg-white p-6 rounded-lg shadow-sm">
-                        <h3 class="font-bold text-gray-900 text-xl mb-3 flex items-center">
-                            <svg class="w-6 h-6 mr-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+            <!-- Header / Metadata -->
+            <header id="intro" class="space-y-6 fade-in-up">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 text-walmart-blue text-xs font-bold tracking-wide uppercase">
+                    Principal Product Manager Proposal
+                </div>
+                <h1 class="text-4xl md:text-6xl font-extrabold text-walmart-dark tracking-tight leading-tight">
+                    The Merchant Brain <span class="text-walmart-blue">.</span>
+                </h1>
+                <p class="text-xl md:text-2xl text-gray-600 font-light max-w-3xl">
+                    End-to-End, Trust-Centered AI Orchestration at Walmart
+                </p>
+                
+                <!-- Metadata Card -->
+                <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+                    <div>
+                        <p class="text-gray-500 mb-1">Author</p>
+                        <p class="font-semibold text-gray-900">Sharmistha Dutta</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 mb-1">Target Role</p>
+                        <p class="font-semibold text-gray-900">Principal Product Manager – Merchandising / AI Platforms</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 mb-1">Audience</p>
+                        <p class="font-semibold text-gray-900">Merch Core, Product, Engineering, Data Science</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 mb-1">Date</p>
+                        <p class="font-semibold text-gray-900">December 2025</p>
+                    </div>
+                </div>
+
+                <!-- How to Read -->
+                <div class="bg-blue-50 border-l-4 border-walmart-blue p-6 rounded-r-xl">
+                    <h3 class="font-bold text-walmart-dark mb-3 flex items-center gap-2">
+                        <i data-lucide="book-open" class="w-4 h-4"></i> How to Read This Document
+                    </h3>
+                    <div class="space-y-3 text-sm text-gray-700">
+                        <div class="flex gap-3">
+                            <span class="font-bold min-w-[100px] text-walmart-blue">5 Minutes:</span>
+                            <span>Read Executive Summary & Skim Appendix A (30/60/90 Days)</span>
+                        </div>
+                        <div class="flex gap-3">
+                            <span class="font-bold min-w-[100px] text-walmart-blue">15 Minutes:</span>
+                            <span>Read Sections 1–4 and Sections 6–10 (Execution)</span>
+                        </div>
+                        <div class="flex gap-3">
+                            <span class="font-bold min-w-[100px] text-walmart-blue">Readiness:</span>
+                            <span>Focus on Phases 1–3, Metrics, and Failure & Rollback</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- 1. Executive Summary -->
+            <section id="executive-summary" class="space-y-8 fade-in-up delay-100">
+                <div class="section-heading">
+                    <h2 class="text-3xl font-bold text-gray-900">1. Executive Summary</h2>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                        <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                            <span class="p-1 bg-red-100 rounded text-red-600"><i data-lucide="alert-triangle" class="w-4 h-4"></i></span>
                             The Problem
                         </h3>
-                        <p class="text-gray-600">Walmart merchants make 10,000+ connected decisions/week. Decisions are fragmented, optimized locally, and suffer from delayed feedback, causing margin leakage and excess inventory.</p>
+                        <p class="text-gray-600 leading-relaxed">
+                            Walmart merchants operate in a high-stakes environment making <span class="font-semibold text-gray-900">10,000+ interconnected decisions per week</span>. These decisions are currently fragmented, locally optimized, and delayed—leading to margin leakage and cognitive overload.
+                        </p>
                     </div>
-                    <div class="bg-walmart-light p-6 rounded-lg shadow-sm border border-blue-100">
-                        <h3 class="font-bold text-walmart-dark text-xl mb-3 flex items-center">
-                            <svg class="w-6 h-6 mr-2 text-walmart-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            The Solution: Merchant Brain
+                    <div class="bg-walmart-dark text-white p-8 rounded-2xl shadow-lg relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-walmart-blue rounded-full filter blur-3xl opacity-20 -mr-10 -mt-10"></div>
+                        <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                            <span class="p-1 bg-blue-500 rounded text-white"><i data-lucide="brain-circuit" class="w-4 h-4"></i></span>
+                            The Proposal: Merchant Brain
                         </h3>
-                        <p class="text-gray-700">An AI-powered decision orchestration layer. Not just optimizing actions, but evaluating downstream consequences to improve lifecycle P&L while preserving EDLP.</p>
+                        <p class="text-blue-100 leading-relaxed">
+                            An AI-powered orchestration layer. Instead of isolated optimizations, it evaluates downstream consequences to recommend or safely automate decisions that improve <span class="font-bold text-white">lifecycle P&L</span> while protecting <span class="font-bold text-white">EDLP</span>.
+                        </p>
                     </div>
                 </div>
-                
-                <div class="space-y-4">
-                    <h3 class="font-bold text-gray-900 mb-2">What Makes This Different</h3>
-                    <ul class="space-y-3">
-                        <li class="flex items-start">
-                            <span class="flex-shrink-0 w-1.5 h-1.5 rounded-full bg-walmart-blue mt-2 mr-3"></span>
-                            <span class="text-gray-600"><strong class="text-gray-900">Orchestration over Optimization:</strong> Resolves conflicts across pricing, demand, and inventory.</span>
-                        </li>
-                        <li class="flex items-start">
-                            <span class="flex-shrink-0 w-1.5 h-1.5 rounded-full bg-walmart-blue mt-2 mr-3"></span>
-                            <span class="text-gray-600"><strong class="text-gray-900">Trust-First Rollout:</strong> Read-only → Human-in-the-loop → Guarded automation.</span>
-                        </li>
-                        <li class="flex items-start">
-                            <span class="flex-shrink-0 w-1.5 h-1.5 rounded-full bg-walmart-blue mt-2 mr-3"></span>
-                            <span class="text-gray-600"><strong class="text-gray-900">Merchants in Control:</strong> Overrides are first-class learning signals.</span>
-                        </li>
+
+                <!-- Differentiators Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="p-4 bg-white rounded-xl border border-gray-200 shadow-sm hover:border-walmart-blue transition-colors">
+                        <div class="font-bold text-walmart-blue mb-2">Orchestration</div>
+                        <p class="text-xs text-gray-600">Resolves conflicts across pricing, demand, and inventory.</p>
+                    </div>
+                    <div class="p-4 bg-white rounded-xl border border-gray-200 shadow-sm hover:border-walmart-blue transition-colors">
+                        <div class="font-bold text-walmart-blue mb-2">Trust-First</div>
+                        <p class="text-xs text-gray-600">Read-only → HITL → Guarded automation rollout.</p>
+                    </div>
+                    <div class="p-4 bg-white rounded-xl border border-gray-200 shadow-sm hover:border-walmart-blue transition-colors">
+                        <div class="font-bold text-walmart-blue mb-2">Control</div>
+                        <p class="text-xs text-gray-600">Merchant overrides are first-class learning signals.</p>
+                    </div>
+                    <div class="p-4 bg-white rounded-xl border border-gray-200 shadow-sm hover:border-walmart-blue transition-colors">
+                        <div class="font-bold text-walmart-blue mb-2">Safety</div>
+                        <p class="text-xs text-gray-600">Built-in rollback, kill-switches, and confidence decay.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. Core Problem -->
+            <section id="core-problem" class="space-y-8 fade-in-up delay-100">
+                <div class="section-heading">
+                    <h2 class="text-3xl font-bold text-gray-900">2. The Core Problem</h2>
+                    <p class="text-lg text-gray-600 mt-2">The Merchant's Impossible Job (Why Now at Walmart)</p>
+                </div>
+
+                <div class="bg-white rounded-2xl p-8 border border-gray-200 shadow-sm">
+                    <h3 class="font-bold text-lg mb-6 uppercase tracking-wider text-gray-500 text-xs">Walmart-Specific Realities</h3>
+                    <div class="grid md:grid-cols-3 gap-8">
+                        <div class="space-y-3">
+                            <div class="w-10 h-10 rounded-lg bg-yellow-100 flex items-center justify-center text-yellow-700 mb-2">
+                                <i data-lucide="tag" class="w-5 h-5"></i>
+                            </div>
+                            <h4 class="font-bold text-gray-900">EDLP is Non-Negotiable</h4>
+                            <p class="text-sm text-gray-600">We cannot rely on reactive price swings. We must protect trust while managing cost volatility.</p>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="w-10 h-10 rounded-lg bg-red-100 flex items-center justify-center text-red-700 mb-2">
+                                <i data-lucide="calendar" class="w-5 h-5"></i>
+                            </div>
+                            <h4 class="font-bold text-gray-900">Peak Risks</h4>
+                            <p class="text-sm text-gray-600">Holiday/Back-to-School compress timelines. Mistakes here are highly visible and costly.</p>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center text-orange-700 mb-2">
+                                <i data-lucide="scale" class="w-5 h-5"></i>
+                            </div>
+                            <h4 class="font-bold text-gray-900">Asymmetric Costs</h4>
+                            <p class="text-sm text-gray-600">Over-discounting permanently erodes margin; under-reacting causes aged inventory.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                    <h4 class="font-bold text-gray-900 mb-4">2.1 Decision Overload & Fragmentation</h4>
+                    <ul class="space-y-2 text-sm text-gray-700">
+                        <li class="flex gap-2"><i data-lucide="x-circle" class="w-4 h-4 text-red-500"></i> Decisions made in isolation across disconnected tools</li>
+                        <li class="flex gap-2"><i data-lucide="x-circle" class="w-4 h-4 text-red-500"></i> Feedback arrives weeks late (systemic margin leakage)</li>
+                        <li class="flex gap-2"><i data-lucide="x-circle" class="w-4 h-4 text-red-500"></i> Merchants spend ~80% of time reacting, not optimizing</li>
                     </ul>
+                </div>
+            </section>
 
-                    <div class="mt-6 pt-6 border-t border-gray-100">
-                        <h3 class="font-bold text-gray-900 mb-2">Success Metrics</h3>
-                        <div class="grid grid-cols-2 gap-4 text-sm text-gray-600">
-                            <div>• Margin recovery</div>
-                            <div>• Inventory aging reduction</div>
-                            <div>• Merchant time saved</div>
-                            <div>• Override & trust metrics</div>
+            <!-- 3. Product Vision -->
+            <section id="product-vision" class="space-y-8 fade-in-up delay-200">
+                <div class="section-heading">
+                    <h2 class="text-3xl font-bold text-gray-900">3. Product Vision</h2>
+                    <p class="text-lg text-gray-600 mt-2">Orchestration Over Optimization (Wally-Enabled)</p>
+                </div>
+
+                <!-- Wally Integration -->
+                <div class="bg-gradient-to-r from-walmart-dark to-blue-900 rounded-2xl p-8 text-white shadow-xl flex flex-col md:flex-row items-center gap-8">
+                    <div class="flex-1 space-y-4">
+                        <h3 class="text-2xl font-bold text-walmart-yellow">Relation to Wally</h3>
+                        <p class="text-blue-100">
+                            Wally is the interaction layer. <span class="text-white font-bold">Merchant Brain</span> is the reasoning engine.
+                        </p>
+                        <div class="flex items-center gap-4 text-sm mt-4 p-4 bg-white/10 rounded-lg backdrop-blur">
+                            <div class="opacity-75">"Ask Wally what happened"</div>
+                            <i data-lucide="arrow-right" class="w-4 h-4 text-walmart-yellow"></i>
+                            <div class="font-bold text-walmart-yellow">"Let Wally coordinate what happens next"</div>
+                        </div>
+                    </div>
+                    <div class="md:w-1/3 flex justify-center">
+                        <div class="w-32 h-32 bg-white/10 rounded-full flex items-center justify-center border border-white/20">
+                            <i data-lucide="sparkles" class="w-12 h-12 text-walmart-yellow"></i>
                         </div>
                     </div>
                 </div>
-            </div>
-        </section>
 
-        <!-- Interactive 6-Agent Model -->
-        <section id="agents" class="bg-gray-50 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-16">
-            <div class="max-w-7xl mx-auto">
-                <div class="text-center mb-12">
-                    <h2 class="text-3xl font-bold text-gray-900">6-Agent Model Architecture</h2>
-                    <p class="mt-4 text-gray-600 max-w-2xl mx-auto">Click on any agent to understand its specific role in the orchestration layer.</p>
+                <!-- Guiding Principle -->
+                <div class="text-center max-w-2xl mx-auto py-8">
+                    <p class="text-2xl font-serif italic text-gray-800">
+                        "No single decision is correct unless it improves lifecycle P&L while protecting EDLP."
+                    </p>
+                </div>
+            </section>
+
+            <!-- 4. Architecture & Interactive Model -->
+            <section id="architecture" class="space-y-12 fade-in-up delay-200">
+                <div class="section-heading">
+                    <h2 class="text-3xl font-bold text-gray-900">4. System Architecture</h2>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="agent-grid">
-                    <!-- Agents injected by JS -->
-                </div>
-                
-                <!-- Detail View for Selected Agent -->
-                <div id="agent-detail" class="hidden mt-8 bg-white p-8 rounded-xl shadow-lg border-t-4 border-walmart-blue animate-fade-in transition-all">
-                    <div class="flex items-start justify-between">
-                        <div>
-                            <h3 id="detail-title" class="text-2xl font-bold text-walmart-dark mb-2"></h3>
-                            <p id="detail-desc" class="text-lg text-gray-700 mb-4"></p>
-                        </div>
-                        <button onclick="closeDetail()" class="text-gray-400 hover:text-gray-600">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                <!-- Animated Decision Flow -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 overflow-hidden">
+                    <div class="flex justify-between items-center mb-8">
+                        <h3 class="font-bold text-lg">Decision Flow Animation</h3>
+                        <button onclick="runFlowAnimation()" class="text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-full flex items-center gap-2 transition">
+                            <i data-lucide="play" class="w-3 h-3"></i> Replay
                         </button>
                     </div>
-                    <div class="bg-blue-50 p-4 rounded-lg mt-2">
-                        <h4 class="font-semibold text-walmart-blue mb-1">Key Responsibility</h4>
-                        <p id="detail-role" class="text-gray-800"></p>
-                    </div>
-                </div>
-            </div>
-        </section>
 
-        <!-- Animated Decision Flow -->
-        <section id="flow" class="py-12">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold text-gray-900">Animated Decision Flow</h2>
-                <p class="mt-4 text-gray-600">How signals transform into action.</p>
-            </div>
+                    <div class="relative py-8">
+                        <!-- Connecting Lines (Desktop) -->
+                        <div class="hidden md:block absolute top-1/2 left-0 w-full h-1 bg-gray-100 -translate-y-1/2 z-0"></div>
+                        <div id="flow-line" class="hidden md:block absolute top-1/2 left-0 h-1 bg-walmart-blue -translate-y-1/2 z-0 flow-line-fill w-0"></div>
 
-            <div class="relative max-w-5xl mx-auto min-h-[400px] md:min-h-[200px]">
-                <!-- Connecting Line Background -->
-                <div class="hidden md:block flow-line"></div>
-                <div class="hidden md:block flow-active-line" id="flow-progress"></div>
-                
-                <!-- Mobile vertical line -->
-                <div class="md:hidden flow-line"></div>
-                <div class="md:hidden flow-active-line" id="flow-progress-mobile"></div>
-
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-8 relative z-10">
-                    <!-- Step 1 -->
-                    <div class="flow-step bg-white p-6 rounded-xl shadow border border-gray-200 text-center transition-all duration-500" id="step-1">
-                        <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-500 font-bold step-icon">1</div>
-                        <h3 class="font-bold text-gray-900 mb-2">Perception Layer</h3>
-                        <p class="text-xs text-gray-500">500+ signals: Sales, Inventory, Competitors</p>
-                    </div>
-
-                    <!-- Step 2 -->
-                    <div class="flow-step bg-white p-6 rounded-xl shadow border border-gray-200 text-center transition-all duration-500" id="step-2">
-                        <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-500 font-bold step-icon">2</div>
-                        <h3 class="font-bold text-gray-900 mb-2">Agent Proposals</h3>
-                        <p class="text-xs text-gray-500">Each agent recommends action with confidence score</p>
-                    </div>
-
-                    <!-- Step 3 -->
-                    <div class="flow-step bg-white p-6 rounded-xl shadow border border-gray-200 text-center transition-all duration-500" id="step-3">
-                        <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-500 font-bold step-icon">3</div>
-                        <h3 class="font-bold text-gray-900 mb-2">Orchestration</h3>
-                        <p class="text-xs text-gray-500">Conflict resolution & P&L Tradeoff Analysis</p>
-                    </div>
-
-                    <!-- Step 4 -->
-                    <div class="flow-step bg-white p-6 rounded-xl shadow border border-gray-200 text-center transition-all duration-500" id="step-4">
-                        <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-500 font-bold step-icon">4</div>
-                        <h3 class="font-bold text-gray-900 mb-2">Action Routing</h3>
-                        <p class="text-xs text-gray-500">Auto-execute, Merchant Review, or Hold</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="text-center mt-8">
-                <button onclick="startAnimation()" class="px-6 py-2 bg-walmart-blue text-white rounded-full hover:bg-blue-700 transition shadow-sm text-sm font-medium">
-                    Replay Flow
-                </button>
-            </div>
-        </section>
-
-        <!-- Execution Strategy -->
-        <section id="execution" class="bg-gray-50 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-16">
-            <div class="max-w-7xl mx-auto">
-                <div class="border-l-4 border-walmart-blue pl-6 py-2 mb-12">
-                    <h2 class="text-3xl font-bold text-gray-900">Execution Strategy</h2>
-                    <p class="mt-2 text-lg text-gray-600">A Trust-First Approach</p>
-                </div>
-
-                <div class="space-y-8">
-                    <!-- Phase 0 -->
-                    <div class="bg-white rounded-lg shadow-sm overflow-hidden flex flex-col md:flex-row">
-                        <div class="bg-gray-100 p-6 md:w-48 flex-shrink-0 flex flex-col justify-center items-center text-center border-b md:border-b-0 md:border-r border-gray-200">
-                            <span class="text-sm font-bold text-gray-500 uppercase">Weeks 0-8</span>
-                            <span class="text-xl font-bold text-walmart-dark mt-1">Phase 0</span>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 relative z-10">
+                            <!-- Nodes -->
+                            <div id="node-1" class="flow-node bg-white p-4 rounded-xl border border-gray-200 shadow-sm text-center">
+                                <div class="w-10 h-10 mx-auto bg-gray-50 rounded-full flex items-center justify-center mb-3 text-gray-500 font-bold">1</div>
+                                <div class="font-bold text-sm mb-1">Perception</div>
+                                <div class="text-xs text-gray-500">500+ Signals</div>
+                            </div>
+                            <div id="node-2" class="flow-node bg-white p-4 rounded-xl border border-gray-200 shadow-sm text-center">
+                                <div class="w-10 h-10 mx-auto bg-gray-50 rounded-full flex items-center justify-center mb-3 text-gray-500 font-bold">2</div>
+                                <div class="font-bold text-sm mb-1">Proposals</div>
+                                <div class="text-xs text-gray-500">Agent Recommendations</div>
+                            </div>
+                            <div id="node-3" class="flow-node bg-white p-4 rounded-xl border border-gray-200 shadow-sm text-center">
+                                <div class="w-10 h-10 mx-auto bg-gray-50 rounded-full flex items-center justify-center mb-3 text-gray-500 font-bold">3</div>
+                                <div class="font-bold text-sm mb-1">Orchestration</div>
+                                <div class="text-xs text-gray-500">Tradeoff Analysis</div>
+                            </div>
+                            <div id="node-4" class="flow-node bg-white p-4 rounded-xl border border-gray-200 shadow-sm text-center">
+                                <div class="w-10 h-10 mx-auto bg-gray-50 rounded-full flex items-center justify-center mb-3 text-gray-500 font-bold">4</div>
+                                <div class="font-bold text-sm mb-1">Action</div>
+                                <div class="text-xs text-gray-500">Auto / Review / Hold</div>
+                            </div>
                         </div>
-                        <div class="p-6 flex-1">
-                            <h3 class="font-bold text-lg mb-2">Merchant Shadowing & Deep Discovery</h3>
-                            <p class="text-gray-600 mb-4">Build trust before building software. Understand real heuristics vs documented process.</p>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                                <div class="bg-blue-50 p-3 rounded">
-                                    <span class="font-semibold text-walmart-blue block mb-1">Key Activity</span>
-                                    Embedded shadowing in pricing resets & promo planning.
+                    </div>
+                </div>
+
+                <!-- 6-Agent Grid -->
+                <div>
+                    <h3 class="font-bold text-xl mb-6">4.1 The 6-Agent Model <span class="text-sm font-normal text-gray-500 ml-2">(Click to expand)</span></h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Agent Cards (Generated via JS below for cleanliness, but written out here for structure) -->
+                        <div class="agent-card group bg-white p-6 rounded-xl border border-gray-200 hover:border-walmart-blue hover:shadow-md cursor-pointer transition-all h-full" onclick="toggleAgent(this, 'assortment')">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="p-2 bg-blue-50 text-walmart-blue rounded-lg"><i data-lucide="package" class="w-6 h-6"></i></div>
+                                <div class="opacity-0 group-hover:opacity-100 text-walmart-blue transition-opacity"><i data-lucide="chevron-down" class="w-4 h-4"></i></div>
+                            </div>
+                            <h4 class="font-bold text-lg text-gray-900 mb-2">Assortment Agent</h4>
+                            <p class="text-sm text-gray-600">What to carry and what to exit based on category goals.</p>
+                            <div class="agent-detail hidden mt-4 pt-4 border-t border-gray-100 text-sm text-gray-700 animate-fade-in">
+                                <span class="font-semibold text-walmart-blue">Role:</span> Evaluates performance to recommend Adds/Deletes.
+                            </div>
+                        </div>
+
+                        <div class="agent-card group bg-white p-6 rounded-xl border border-gray-200 hover:border-walmart-blue hover:shadow-md cursor-pointer transition-all h-full" onclick="toggleAgent(this)">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="p-2 bg-green-50 text-green-600 rounded-lg"><i data-lucide="trending-up" class="w-6 h-6"></i></div>
+                                <div class="opacity-0 group-hover:opacity-100 text-green-600 transition-opacity"><i data-lucide="chevron-down" class="w-4 h-4"></i></div>
+                            </div>
+                            <h4 class="font-bold text-lg text-gray-900 mb-2">Demand Agent</h4>
+                            <p class="text-sm text-gray-600">Forecasts how much to buy and when.</p>
+                            <div class="agent-detail hidden mt-4 pt-4 border-t border-gray-100 text-sm text-gray-700">
+                                <span class="font-semibold text-green-600">Role:</span> Ingests sales trends, seasonality, and external signals.
+                            </div>
+                        </div>
+
+                        <div class="agent-card group bg-white p-6 rounded-xl border border-gray-200 hover:border-walmart-blue hover:shadow-md cursor-pointer transition-all h-full" onclick="toggleAgent(this)">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="p-2 bg-yellow-50 text-yellow-600 rounded-lg"><i data-lucide="dollar-sign" class="w-6 h-6"></i></div>
+                                <div class="opacity-0 group-hover:opacity-100 text-yellow-600 transition-opacity"><i data-lucide="chevron-down" class="w-4 h-4"></i></div>
+                            </div>
+                            <h4 class="font-bold text-lg text-gray-900 mb-2">Pricing Agent</h4>
+                            <p class="text-sm text-gray-600">Base price, adjustments, markdown timing.</p>
+                            <div class="agent-detail hidden mt-4 pt-4 border-t border-gray-100 text-sm text-gray-700">
+                                <span class="font-semibold text-yellow-600">Role:</span> Optimizes elasticity while adhering to EDLP guardrails.
+                            </div>
+                        </div>
+
+                        <div class="agent-card group bg-white p-6 rounded-xl border border-gray-200 hover:border-walmart-blue hover:shadow-md cursor-pointer transition-all h-full" onclick="toggleAgent(this)">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="p-2 bg-red-50 text-red-600 rounded-lg"><i data-lucide="percent" class="w-6 h-6"></i></div>
+                                <div class="opacity-0 group-hover:opacity-100 text-red-600 transition-opacity"><i data-lucide="chevron-down" class="w-4 h-4"></i></div>
+                            </div>
+                            <h4 class="font-bold text-lg text-gray-900 mb-2">Promotion Agent</h4>
+                            <p class="text-sm text-gray-600">When and how deeply to promote.</p>
+                            <div class="agent-detail hidden mt-4 pt-4 border-t border-gray-100 text-sm text-gray-700">
+                                <span class="font-semibold text-red-600">Role:</span> Balances traffic driving vs margin erosion; checks cannibalization.
+                            </div>
+                        </div>
+
+                        <div class="agent-card group bg-white p-6 rounded-xl border border-gray-200 hover:border-walmart-blue hover:shadow-md cursor-pointer transition-all h-full" onclick="toggleAgent(this)">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="p-2 bg-purple-50 text-purple-600 rounded-lg"><i data-lucide="truck" class="w-6 h-6"></i></div>
+                                <div class="opacity-0 group-hover:opacity-100 text-purple-600 transition-opacity"><i data-lucide="chevron-down" class="w-4 h-4"></i></div>
+                            </div>
+                            <h4 class="font-bold text-lg text-gray-900 mb-2">Supply Agent</h4>
+                            <p class="text-sm text-gray-600">Replenishment, lead time, supplier constraints.</p>
+                            <div class="agent-detail hidden mt-4 pt-4 border-t border-gray-100 text-sm text-gray-700">
+                                <span class="font-semibold text-purple-600">Role:</span> Ensures availability and optimizes logistics costs.
+                            </div>
+                        </div>
+
+                        <div class="agent-card group bg-white p-6 rounded-xl border border-gray-200 hover:border-walmart-blue hover:shadow-md cursor-pointer transition-all h-full" onclick="toggleAgent(this)">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="p-2 bg-orange-50 text-orange-600 rounded-lg"><i data-lucide="alert-circle" class="w-6 h-6"></i></div>
+                                <div class="opacity-0 group-hover:opacity-100 text-orange-600 transition-opacity"><i data-lucide="chevron-down" class="w-4 h-4"></i></div>
+                            </div>
+                            <h4 class="font-bold text-lg text-gray-900 mb-2">Liquidation Agent</h4>
+                            <p class="text-sm text-gray-600">Early markdowns, clearance routing, exits.</p>
+                            <div class="agent-detail hidden mt-4 pt-4 border-t border-gray-100 text-sm text-gray-700">
+                                <span class="font-semibold text-orange-600">Role:</span> Minimizes loss on end-of-life inventory.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5-10. Execution Strategy -->
+            <section id="execution" class="space-y-12 fade-in-up delay-300">
+                <div class="section-heading">
+                    <h2 class="text-3xl font-bold text-gray-900">Execution Strategy</h2>
+                    <p class="text-lg text-gray-600 mt-2">How This Actually Ships</p>
+                </div>
+
+                <!-- Phase Timeline (Vertical) -->
+                <div class="relative space-y-12 pl-8 border-l-2 border-gray-200 ml-4">
+                    
+                    <!-- Phase 0 -->
+                    <div class="relative">
+                        <span class="absolute -left-[41px] top-0 flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 border-4 border-white shadow-sm font-bold text-gray-500">0</span>
+                        <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-900">Merchant Shadowing & Deep Discovery</h3>
+                                    <p class="text-sm text-gray-500 font-mono mt-1">Weeks 0–8</p>
                                 </div>
-                                <div class="bg-green-50 p-3 rounded">
-                                    <span class="font-semibold text-green-700 block mb-1">Deliverable</span>
-                                    Decision taxonomy & Trust Map.
+                                <span class="px-3 py-1 bg-gray-100 text-gray-600 text-xs font-bold rounded-full uppercase">Trust Building</span>
+                            </div>
+                            <div class="prose prose-sm text-gray-600 max-w-none">
+                                <ul class="list-disc pl-5 space-y-1">
+                                    <li><strong>Step 1: Merchant Selection:</strong> 10-15 merchants (Pilot category + Adjacent complexity).</li>
+                                    <li><strong>Step 2: Embedded Shadowing:</strong> Sit in pricing resets and promo planning. Capture inputs, ignored signals, and anxiety points.</li>
+                                    <li><strong>Step 3: Decision Deconstruction:</strong> Document triggers, signals, reversibility.</li>
+                                </ul>
+                                <div class="mt-4 p-3 bg-blue-50 text-walmart-blue rounded-lg text-xs font-semibold">
+                                    Deliverable: Decision Taxonomy & Trust Map
                                 </div>
                             </div>
                         </div>
                     </div>
 
+                    <!-- Cross Functional Model (Inserted here as context) -->
+                    <div class="relative pl-6 py-4 bg-slate-50 border-l-4 border-walmart-dark rounded-r-lg">
+                         <h4 class="font-bold text-gray-800 text-sm mb-2">Cross-Functional Execution Model</h4>
+                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
+                             <div>
+                                 <strong class="text-gray-900">Core Working Group (Weekly):</strong>
+                                 <br>Product, Eng, DS, Merchant Lead.
+                                 <br><em>Focus: Overrides & Quality.</em>
+                             </div>
+                             <div>
+                                 <strong class="text-gray-900">Extended Stakeholders:</strong>
+                                 <br>Pricing COE, Supply Chain, Finance, Legal.
+                                 <br><em>Focus: EDLP Guardrails.</em>
+                             </div>
+                         </div>
+                    </div>
+
                     <!-- Phase 1 -->
-                    <div class="bg-white rounded-lg shadow-sm overflow-hidden flex flex-col md:flex-row">
-                        <div class="bg-gray-100 p-6 md:w-48 flex-shrink-0 flex flex-col justify-center items-center text-center border-b md:border-b-0 md:border-r border-gray-200">
-                            <span class="text-sm font-bold text-gray-500 uppercase">Weeks 9-16</span>
-                            <span class="text-xl font-bold text-walmart-dark mt-1">Phase 1</span>
-                        </div>
-                        <div class="p-6 flex-1">
-                            <h3 class="font-bold text-lg mb-2">Read-Only Decision Intelligence</h3>
-                            <p class="text-gray-600 mb-4">Focus only on non-reversible, advisory signals. No write access. No automation.</p>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                                <div class="bg-blue-50 p-3 rounded">
-                                    <span class="font-semibold text-walmart-blue block mb-1">Scope</span>
-                                    Markdown alerts, Demand anomaly detection.
+                    <div class="relative">
+                        <span class="absolute -left-[41px] top-0 flex items-center justify-center w-10 h-10 rounded-full bg-blue-100 border-4 border-white shadow-sm font-bold text-walmart-blue">1</span>
+                        <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-900">Read-Only Decision Intelligence</h3>
+                                    <p class="text-sm text-gray-500 font-mono mt-1">Weeks 9–16</p>
                                 </div>
-                                <div class="bg-green-50 p-3 rounded">
-                                    <span class="font-semibold text-green-700 block mb-1">Success Metric</span>
-                                    Signal precision & Merchant agreement rate.
+                                <span class="px-3 py-1 bg-blue-50 text-walmart-blue text-xs font-bold rounded-full uppercase">Advisory Only</span>
+                            </div>
+                            <p class="text-gray-600 mb-4 text-sm">Focus only on non-reversible, advisory signals (Markdown timing, Anomaly detection). No write access.</p>
+                            <div class="grid grid-cols-2 gap-4 text-xs">
+                                <div class="bg-gray-50 p-3 rounded">
+                                    <strong>Signal Quality Metrics:</strong>
+                                    <br>Precision@K, False positive rate.
+                                </div>
+                                <div class="bg-gray-50 p-3 rounded">
+                                    <strong>Merchant Behavior Metrics:</strong>
+                                    <br>Alert open rate, Dismissal rate.
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Phase 2 -->
-                    <div class="bg-white rounded-lg shadow-sm overflow-hidden flex flex-col md:flex-row">
-                        <div class="bg-gray-100 p-6 md:w-48 flex-shrink-0 flex flex-col justify-center items-center text-center border-b md:border-b-0 md:border-r border-gray-200">
-                            <span class="text-sm font-bold text-gray-500 uppercase">Weeks 17-28</span>
-                            <span class="text-xl font-bold text-walmart-dark mt-1">Phase 2</span>
-                        </div>
-                        <div class="p-6 flex-1">
-                            <h3 class="font-bold text-lg mb-2">Human-in-the-Loop Recommendations</h3>
-                            <p class="text-gray-600 mb-4">Recommendations include actions, P&L impact, and confidence scores. Overrides capture "why".</p>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                                <div class="bg-blue-50 p-3 rounded">
-                                    <span class="font-semibold text-walmart-blue block mb-1">Workflow</span>
-                                    Accept, Modify, or Reject (with reason code).
+                    <div class="relative">
+                        <span class="absolute -left-[41px] top-0 flex items-center justify-center w-10 h-10 rounded-full bg-blue-500 border-4 border-white shadow-sm font-bold text-white">2</span>
+                        <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-900">Human-in-the-Loop</h3>
+                                    <p class="text-sm text-gray-500 font-mono mt-1">Weeks 17–28</p>
                                 </div>
-                                <div class="bg-green-50 p-3 rounded">
-                                    <span class="font-semibold text-green-700 block mb-1">Goal</span>
-                                    Generate training data from overrides.
-                                </div>
+                                <span class="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded-full uppercase">Partnership</span>
+                            </div>
+                            <p class="text-gray-600 mb-4 text-sm">Recommendations include Suggested Action, P&L Impact, and Confidence Score.</p>
+                            
+                            <div class="mb-4 border border-blue-100 bg-blue-50 rounded-lg p-3 text-sm">
+                                <strong class="text-walmart-blue">The Override Framework:</strong>
+                                <ul class="flex gap-4 mt-2">
+                                    <li class="flex items-center gap-1"><i data-lucide="check-circle" class="w-4 h-4 text-green-600"></i> Accept</li>
+                                    <li class="flex items-center gap-1"><i data-lucide="edit-3" class="w-4 h-4 text-yellow-600"></i> Modify</li>
+                                    <li class="flex items-center gap-1"><i data-lucide="x-circle" class="w-4 h-4 text-red-600"></i> Reject (w/ Reason)</li>
+                                </ul>
                             </div>
                         </div>
                     </div>
 
                     <!-- Phase 3 -->
-                    <div class="bg-white rounded-lg shadow-sm overflow-hidden flex flex-col md:flex-row border-l-4 border-walmart-yellow">
-                        <div class="bg-gray-100 p-6 md:w-48 flex-shrink-0 flex flex-col justify-center items-center text-center border-b md:border-b-0 md:border-r border-gray-200">
-                            <span class="text-sm font-bold text-gray-500 uppercase">Weeks 29-44</span>
-                            <span class="text-xl font-bold text-walmart-dark mt-1">Phase 3</span>
-                        </div>
-                        <div class="p-6 flex-1">
-                            <h3 class="font-bold text-lg mb-2">Limited Auto-Execution</h3>
-                            <p class="text-gray-600 mb-4">Automation governed by hard business rules, not just model confidence.</p>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                                <div class="bg-blue-50 p-3 rounded">
-                                    <span class="font-semibold text-walmart-blue block mb-1">Guardrails</span>
-                                    Never violate EDLP. Never execute irreversible actions without confirmation.
+                    <div class="relative">
+                        <span class="absolute -left-[41px] top-0 flex items-center justify-center w-10 h-10 rounded-full bg-walmart-yellow border-4 border-white shadow-sm font-bold text-walmart-dark">3</span>
+                        <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-200 border-l-4 border-l-walmart-yellow">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-900">Limited Auto-Execution</h3>
+                                    <p class="text-sm text-gray-500 font-mono mt-1">Weeks 29–44</p>
                                 </div>
-                                <div class="bg-green-50 p-3 rounded">
-                                    <span class="font-semibold text-green-700 block mb-1">Target</span>
-                                    Low-risk, high-confidence, low-dollar impact decisions.
-                                </div>
+                                <span class="px-3 py-1 bg-yellow-100 text-yellow-800 text-xs font-bold rounded-full uppercase">Automation</span>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-4">Governed by hard business rules (Deterministic Guardrails), not just model confidence.</p>
+                            <div class="bg-slate-50 p-3 rounded text-xs text-gray-600 font-mono">
+                                > IF margin < X% THEN Require_VP_Approval<br>
+                                > IF upstream_cost_spike THEN Disable_Auto_Discount<br>
+                                > NEVER violate EDLP Price Floors
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <!-- Challenges & Risks -->
-        <section class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-                <h3 class="font-bold text-gray-900 text-xl mb-4">Top Challenges</h3>
-                <div class="space-y-4">
-                    <div class="border-l-2 border-red-400 pl-4">
-                        <h4 class="font-semibold text-gray-800 text-sm">Data Fragmentation</h4>
-                        <p class="text-sm text-gray-600">Fragmented sources. Strategy: Surface uncertainty rather than waiting for perfect data.</p>
+            <!-- 11. Challenges & Tradeoffs -->
+            <section id="challenges" class="space-y-8 fade-in-up">
+                <div class="section-heading">
+                    <h2 class="text-3xl font-bold text-gray-900">11. Challenges & Tradeoffs</h2>
+                    <p class="text-lg text-gray-600 mt-2">Explicit Hard Decisions</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Card 1 -->
+                    <div class="bg-white p-6 rounded-xl border border-gray-200 hover:shadow-lg transition">
+                        <h4 class="font-bold text-gray-900 mb-2">Data Fragmentation</h4>
+                        <div class="text-xs font-bold text-red-500 uppercase mb-2">Tradeoff: Perfect vs Usable</div>
+                        <p class="text-sm text-gray-600 mb-3">Signals span POS, inventory, supplier feeds with varying quality.</p>
+                        <div class="text-sm bg-gray-50 p-3 rounded italic border-l-2 border-walmart-blue">
+                            "Ship with uncertainty surfaced rather than wait for data perfection."
+                        </div>
                     </div>
-                    <div class="border-l-2 border-red-400 pl-4">
-                        <h4 class="font-semibold text-gray-800 text-sm">Label Scarcity</h4>
-                        <p class="text-sm text-gray-600">Lack of "good" vs "bad" labels. Strategy: Treat overrides as first-class training data.</p>
+
+                    <!-- Card 2 -->
+                    <div class="bg-white p-6 rounded-xl border border-gray-200 hover:shadow-lg transition">
+                        <h4 class="font-bold text-gray-900 mb-2">Label Scarcity</h4>
+                        <div class="text-xs font-bold text-red-500 uppercase mb-2">Tradeoff: Purity vs Learning</div>
+                        <p class="text-sm text-gray-600 mb-3">Historical data lacks clean "good/bad" labels.</p>
+                        <div class="text-sm bg-gray-50 p-3 rounded italic border-l-2 border-walmart-blue">
+                            "Treat merchant overrides as first-class training data."
+                        </div>
                     </div>
-                    <div class="border-l-2 border-red-400 pl-4">
-                        <h4 class="font-semibold text-gray-800 text-sm">Merchant Skepticism</h4>
-                        <p class="text-sm text-gray-600">Strategy: Optimize for voluntary usage first. Let adoption lag metrics.</p>
+
+                    <!-- Card 3 -->
+                    <div class="bg-white p-6 rounded-xl border border-gray-200 hover:shadow-lg transition">
+                        <h4 class="font-bold text-gray-900 mb-2">Compute Cost vs Value</h4>
+                        <div class="text-xs font-bold text-red-500 uppercase mb-2">Tradeoff: Precision vs Cost</div>
+                        <p class="text-sm text-gray-600 mb-3">Large-scale simulations are expensive.</p>
+                        <div class="text-sm bg-gray-50 p-3 rounded italic border-l-2 border-walmart-blue">
+                            "Spend compute where merchants spend judgment (High impact SKUs)."
+                        </div>
+                    </div>
+
+                    <!-- Card 4 -->
+                    <div class="bg-white p-6 rounded-xl border border-gray-200 hover:shadow-lg transition">
+                        <h4 class="font-bold text-gray-900 mb-2">Automation Risk</h4>
+                        <div class="text-xs font-bold text-red-500 uppercase mb-2">Tradeoff: Speed vs Safety</div>
+                        <p class="text-sm text-gray-600 mb-3">Trust collapses easily with automation errors.</p>
+                        <div class="text-sm bg-gray-50 p-3 rounded italic border-l-2 border-walmart-blue">
+                            "Immediate rollback on confidence breaches."
+                        </div>
                     </div>
                 </div>
-            </div>
+            </section>
 
-            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-                <h3 class="font-bold text-gray-900 text-xl mb-4">Failure Modes & Rollback</h3>
-                <div class="space-y-4">
-                    <div class="bg-red-50 p-3 rounded">
-                        <span class="font-semibold text-red-800 text-sm block">Immediate Rollback</span>
-                        <p class="text-sm text-red-700">Confidence threshold breach disables auto-exec instantly.</p>
-                    </div>
-                    <div class="bg-red-50 p-3 rounded">
-                        <span class="font-semibold text-red-800 text-sm block">Kill Switches</span>
-                        <p class="text-sm text-red-700">Global, Category, and Merchant-level kill switches available.</p>
-                    </div>
-                    <p class="text-sm text-gray-500 italic mt-2">"Failure is treated as expected input, not exception."</p>
+            <!-- 12. Failure & Governance -->
+            <section id="failure-governance" class="space-y-8 fade-in-up">
+                <div class="section-heading">
+                    <h2 class="text-3xl font-bold text-gray-900">12. Failure, Rollback & Metrics</h2>
                 </div>
-            </div>
-        </section>
 
-        <!-- Pedigree / Bio -->
-        <section id="pedigree" class="bg-walmart-dark text-white rounded-xl overflow-hidden shadow-lg">
-            <div class="p-8 md:p-12">
-                <h2 class="text-3xl font-bold mb-8">Why This Execution Requires a Principal PM</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
-                    <div>
-                        <h3 class="text-walmart-yellow font-bold text-xl mb-3">The Visa Angle</h3>
-                        <p class="text-blue-100 mb-4">Operating at Extreme Scale.</p>
-                        <ul class="text-sm text-gray-300 space-y-2 list-disc list-inside">
-                            <li>Built multi-tenant AI platforms processing 500M+ transactions.</li>
-                            <li>Experience with high-reliability, explainable, governed systems.</li>
-                            <li>Understanding of latency, uptime, and kill-switch requirements.</li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h3 class="text-walmart-yellow font-bold text-xl mb-3">The Nike Angle</h3>
-                        <p class="text-blue-100 mb-4">Driving AI Adoption with Merchants.</p>
-                        <ul class="text-sm text-gray-300 space-y-2 list-disc list-inside">
-                            <li>Led AI-driven products with 0% to 80% adoption growth.</li>
-                            <li>Built systems where overrides trained the model.</li>
-                            <li>Deep understanding of cultural resistance to automation.</li>
-                        </ul>
+                <div class="bg-red-50 rounded-xl p-8 border border-red-100">
+                    <h3 class="text-red-900 font-bold text-lg mb-4 flex items-center gap-2">
+                        <i data-lucide="shield-alert" class="w-5 h-5"></i> Rollback Playbook
+                    </h3>
+                    <div class="grid md:grid-cols-3 gap-6 text-sm">
+                        <div>
+                            <span class="font-bold text-red-800 block mb-1">Immediate (Automated)</span>
+                            Confidence threshold breach disables auto-exec instantly.
+                        </div>
+                        <div>
+                            <span class="font-bold text-red-800 block mb-1">Short-Term (Human)</span>
+                            Merchant-initiated rollback within SLA.
+                        </div>
+                        <div>
+                            <span class="font-bold text-red-800 block mb-1">Systemic</span>
+                            Model freeze, Root-cause analysis, Re-simulation.
+                        </div>
                     </div>
                 </div>
-                <div class="mt-10 pt-8 border-t border-blue-900 text-center">
-                    <p class="text-lg font-light text-blue-200">"This is not feature delivery. It is decision system transformation at Walmart scale."</p>
+
+                <!-- Metrics Grid -->
+                <div>
+                    <h3 class="font-bold text-gray-900 text-lg mb-4">Metrics Framework (Non-North-Star)</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="bg-white border border-gray-200 p-4 rounded-lg">
+                            <div class="text-xs font-bold text-gray-500 uppercase mb-2">Financial</div>
+                            <ul class="text-sm space-y-1">
+                                <li>Gross margin lift</li>
+                                <li>Markdown recovery</li>
+                                <li>Inventory turns</li>
+                            </ul>
+                        </div>
+                        <div class="bg-white border border-gray-200 p-4 rounded-lg">
+                            <div class="text-xs font-bold text-gray-500 uppercase mb-2">Operational</div>
+                            <ul class="text-sm space-y-1">
+                                <li>Decision cycle time</li>
+                                <li>Workload reduction</li>
+                            </ul>
+                        </div>
+                        <div class="bg-white border border-gray-200 p-4 rounded-lg">
+                            <div class="text-xs font-bold text-gray-500 uppercase mb-2">Trust & Adoption</div>
+                            <ul class="text-sm space-y-1">
+                                <li>Override trends</li>
+                                <li>Repeat usage</li>
+                                <li>Opt-out rates</li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-    </main>
+            <!-- 14. Pedigree -->
+            <section id="pedigree" class="bg-walmart-dark text-white rounded-3xl p-8 md:p-12 shadow-2xl overflow-hidden relative">
+                <!-- Decorative Elements -->
+                <div class="absolute top-0 right-0 w-64 h-64 bg-walmart-blue rounded-full filter blur-[80px] opacity-30"></div>
+                <div class="absolute bottom-0 left-0 w-64 h-64 bg-walmart-yellow rounded-full filter blur-[80px] opacity-20"></div>
 
-    <footer class="bg-gray-100 border-t border-gray-200 mt-12 py-12">
-        <div class="max-w-7xl mx-auto px-4 text-center text-gray-500 text-sm">
-            <p>&copy; 2025 Merchant Brain Proposal. Internal Use Only.</p>
-        </div>
-    </footer>
+                <div class="relative z-10">
+                    <h2 class="text-3xl font-bold mb-8">14. The Visa + Nike Pedigree</h2>
+                    <p class="text-lg text-blue-200 mb-10 max-w-2xl">
+                        This initiative requires rare operating experience across scale, data, and merchant-driven organizations.
+                    </p>
 
-    <!-- Scripts for Interactivity -->
+                    <div class="grid md:grid-cols-2 gap-12">
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-2 text-walmart-yellow font-bold text-xl">
+                                <i data-lucide="credit-card" class="w-6 h-6"></i> The Visa Angle
+                            </div>
+                            <h4 class="font-semibold text-white">Operating at Extreme Scale</h4>
+                            <p class="text-sm text-gray-300 leading-relaxed">
+                                Built multi-tenant AI platforms processing 500M+ transactions. Proven comfort with high reliability, kill-switch requirements, and executive scrutiny on AI decisions.
+                            </p>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-2 text-walmart-yellow font-bold text-xl">
+                                <i data-lucide="footprints" class="w-6 h-6"></i> The Nike Angle
+                            </div>
+                            <h4 class="font-semibold text-white">Driving AI Adoption</h4>
+                            <p class="text-sm text-gray-300 leading-relaxed">
+                                Led AI products from 0% to 80% adoption. Built systems where merchant overrides trained the model. Deep understanding of cultural resistance.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="mt-12 pt-8 border-t border-white/10 text-center">
+                        <h3 class="text-xl font-bold text-white mb-2">Why This Requires a Principal PM</h3>
+                        <p class="text-blue-200 text-sm max-w-xl mx-auto">
+                            "This is not feature delivery. It is decision system transformation at Walmart scale."
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Footer -->
+            <footer class="pt-12 pb-24 text-center text-sm text-gray-400">
+                <p>&copy; 2025 Merchant Brain Proposal • Confidential • Internal Use Only</p>
+            </footer>
+
+        </main>
+    </div>
+
+    <!-- Scripts -->
     <script>
-        // Data for Agents
-        const agents = [
-            { id: 1, title: "Assortment Agent", desc: "Decides what to carry and what to exit.", role: "Evaluates SKU performance against category goals to recommend adds/deletes." },
-            { id: 2, title: "Demand Agent", desc: "Forecasts how much to buy and when.", role: "Ingests sales trends, seasonality, and external signals to predict demand." },
-            { id: 3, title: "Pricing Agent", desc: "Manages base price, adjustments, markdown timing.", role: "Optimizes price elasticity while strictly adhering to EDLP guardrails." },
-            { id: 4, title: "Promotion Agent", desc: "Determines when and how deeply to promote.", role: "Balances traffic driving vs margin erosion; checks for cannibalization." },
-            { id: 5, title: "Supply Agent", desc: "Handles replenishment, lead time, supplier constraints.", role: "Ensures stock availability and optimizes for logistics costs/lead times." },
-            { id: 6, title: "Liquidation Agent", desc: "Manages early markdowns, clearance routing, exits.", role: "Minimizes loss on end-of-life inventory through timely exit strategies." }
-        ];
+        // Initialize Icons
+        lucide.createIcons();
 
-        // Render Agents
-        const grid = document.getElementById('agent-grid');
-        agents.forEach(agent => {
-            const card = document.createElement('div');
-            card.className = "bg-white p-6 rounded-xl shadow hover:shadow-md transition cursor-pointer border border-gray-100 hover:border-walmart-blue group";
-            card.onclick = () => showAgentDetail(agent);
-            card.innerHTML = `
-                <div class="h-10 w-10 rounded bg-blue-50 text-walmart-blue flex items-center justify-center font-bold mb-4 group-hover:bg-walmart-blue group-hover:text-white transition">
-                    ${agent.title.charAt(0)}
-                </div>
-                <h3 class="font-bold text-lg text-gray-900 mb-2 group-hover:text-walmart-blue transition">${agent.title}</h3>
-                <p class="text-sm text-gray-600">${agent.desc}</p>
-            `;
-            grid.appendChild(card);
-        });
+        // 6-Agent Interactivity
+        function toggleAgent(card) {
+            // Close all others
+            const allCards = document.querySelectorAll('.agent-card');
+            const detail = card.querySelector('.agent-detail');
+            const icon = card.querySelector('.opacity-0');
+            const isHidden = detail.classList.contains('hidden');
 
-        function showAgentDetail(agent) {
-            const detailSection = document.getElementById('agent-detail');
-            document.getElementById('detail-title').innerText = agent.title;
-            document.getElementById('detail-desc').innerText = agent.desc;
-            document.getElementById('detail-role').innerText = agent.role;
-            
-            detailSection.classList.remove('hidden');
-            detailSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            // Reset all
+            allCards.forEach(c => {
+                c.classList.remove('ring-2', 'ring-walmart-blue');
+                c.querySelector('.agent-detail').classList.add('hidden');
+            });
+
+            if (isHidden) {
+                card.classList.add('ring-2', 'ring-walmart-blue');
+                detail.classList.remove('hidden');
+            }
         }
 
-        function closeDetail() {
-            document.getElementById('agent-detail').classList.add('hidden');
-        }
-
-        // Animation Logic
-        function startAnimation() {
+        // Flow Animation
+        function runFlowAnimation() {
             const steps = [1, 2, 3, 4];
-            const progressBar = document.getElementById('flow-progress');
-            const progressBarMobile = document.getElementById('flow-progress-mobile');
+            const line = document.getElementById('flow-line');
             
             // Reset
             steps.forEach(i => {
-                const el = document.getElementById(`step-${i}`);
-                el.classList.remove('border-walmart-blue', 'ring-2', 'ring-blue-100');
-                el.querySelector('.step-icon').classList.remove('bg-walmart-blue', 'text-white');
-                el.querySelector('.step-icon').classList.add('bg-gray-100', 'text-gray-500');
+                const node = document.getElementById(`node-${i}`);
+                node.classList.remove('active', 'border-walmart-blue');
+                node.querySelector('div').classList.remove('bg-walmart-blue', 'text-white');
+                node.querySelector('div').classList.add('bg-gray-50', 'text-gray-500');
             });
-            progressBar.style.width = '0%';
-            progressBarMobile.style.height = '0%';
+            line.style.width = '0%';
 
+            // Animate
             let current = 0;
-            
-            function nextStep() {
+            function next() {
                 if (current >= steps.length) {
-                    // Optional: loop or stop. Let's stop after one full flow to be less distracting.
-                    // Or reset to show completion
-                    progressBar.style.width = '100%';
-                    progressBarMobile.style.height = '100%';
-                    return; 
+                    line.style.width = '100%';
+                    return;
                 }
 
                 const i = steps[current];
-                const el = document.getElementById(`step-${i}`);
+                const node = document.getElementById(`node-${i}`);
                 
-                // Highlight active step
-                el.classList.add('border-walmart-blue', 'ring-2', 'ring-blue-100');
-                el.querySelector('.step-icon').classList.remove('bg-gray-100', 'text-gray-500');
-                el.querySelector('.step-icon').classList.add('bg-walmart-blue', 'text-white');
-                
-                // Update progress bar
+                // Highlight
+                node.classList.add('active', 'border-walmart-blue');
+                node.querySelector('div').classList.remove('bg-gray-50', 'text-gray-500');
+                node.querySelector('div').classList.add('bg-walmart-blue', 'text-white');
+
+                // Move line
                 if (current > 0) {
-                   const pct = (current / (steps.length - 1)) * 100;
-                   progressBar.style.width = `${pct}%`;
-                   progressBarMobile.style.height = `${pct}%`;
+                    line.style.width = `${(current / (steps.length - 1)) * 100}%`;
                 }
 
                 current++;
-                setTimeout(nextStep, 1000); // 1 second per step
+                setTimeout(next, 800);
             }
-
-            // Start immediately
-            nextStep();
+            next();
         }
 
-        // Start animation on load
-        window.addEventListener('load', () => {
-             // Delay slightly for effect
-             setTimeout(startAnimation, 500);
-        });
+        // Run animation on load
+        setTimeout(runFlowAnimation, 1000);
 
-        // Intersection Observer to restart animation when scrolled into view
+        // Intersection Observer for Animation Replay
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    startAnimation();
+                    runFlowAnimation();
                 }
             });
         }, { threshold: 0.5 });
-
-        observer.observe(document.getElementById('flow'));
+        observer.observe(document.getElementById('architecture'));
 
     </script>
 </body>
